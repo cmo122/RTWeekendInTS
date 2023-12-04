@@ -1,8 +1,8 @@
 import Vector from './vector'
 
 export default class Ray{
-    private orig: Vector;
-    private dir: Vector;
+    public orig: Vector;
+    public dir: Vector;
 
     constructor(origin: Vector = new Vector(), direction: Vector = new Vector()) {
         this.orig = origin;
@@ -20,4 +20,5 @@ export default class Ray{
     public at(t:number):Vector{
         return this.orig.add(this.dir.multiply(t))
     }
+
 }

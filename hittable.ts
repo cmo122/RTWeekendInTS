@@ -1,6 +1,7 @@
 import Ray from './ray'
 import Vector from './vector'
 import Interval from './interval';
+import {Material} from './material';
 
 class Point extends Vector { }
 
@@ -9,8 +10,9 @@ export class HitRecord {
     public normal: Vector;
     public t: number;
     public frontFace: boolean;
+    public mat!: Material;
 
-    constructor(p: Vector=new Vector, normal: Vector=new Vector, t: number=0, frontFace: boolean=false) {
+    constructor(p: Vector = new Vector, normal: Vector = new Vector, t: number = 0, frontFace: boolean = false) {
         this.p = p;
         this.normal = normal;
         this.t = t;
@@ -23,6 +25,6 @@ export class HitRecord {
     }
 }
 
-export  interface Hittable {
-    hit(r: Ray, ray_t:Interval, rec: HitRecord): boolean;
+export interface Hittable {
+    hit(r: Ray, ray_t: Interval, rec: HitRecord): boolean;
 }

@@ -15,6 +15,12 @@ export default class Interval {
         return this.min < x && x < this.max;
     }
 
+    clamp(x: number): number {
+        if (x < this.min) return this.min;
+        if (x > this.max) return this.max;
+        return x;
+    }
+
     static empty = new Interval();
     static universe = new Interval(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
 }

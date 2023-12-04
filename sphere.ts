@@ -2,14 +2,18 @@ import { Hittable, HitRecord } from './hittable'
 import Vector from './vector'
 import Ray from './ray';
 import Interval from './interval';
+import {Material} from './material'
 
 export default class Sphere implements Hittable {
     private center: Vector;
     private radius: number;
+    private mat!: Material;
 
-    constructor(_center: Vector, _radius: number) {
+
+    constructor(_center: Vector, _radius: number, _material: Material) {
         this.center = _center;
         this.radius = _radius;
+        this.mat = _material
     }
 
     hit(r: Ray, ray_t: Interval, rec: HitRecord): boolean {
@@ -33,6 +37,7 @@ export default class Sphere implements Hittable {
         rec.p = r.at(rec.t);
         const outwardNormal: Vector = ((rec.p).subtract(this.center)).divide(this.radius)
         rec.setFaceNormal(r, outwardNormal)
+        rec.mat = this.mat;
 
         return true;
     }
