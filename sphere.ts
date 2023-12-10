@@ -2,7 +2,8 @@ import { Hittable, HitRecord } from './hittable'
 import Vector from './vector'
 import Ray from './ray';
 import Interval from './interval';
-import {Material} from './material'
+import { Material } from './material'
+import AABB from './aabb';
 
 export default class Sphere implements Hittable {
     private center: Vector;
@@ -39,6 +40,14 @@ export default class Sphere implements Hittable {
         rec.setFaceNormal(r, outwardNormal)
         rec.mat = this.mat;
 
+        return true;
+    }
+
+    boundingBox(outputBox: AABB): boolean {
+        outputBox = new AABB(
+            this.center.subtract(new Vector(this.radius, this.radius, this.radius)),
+            this.center.add(new Vector(this.radius, this.radius, this.radius))
+        )
         return true;
     }
 }

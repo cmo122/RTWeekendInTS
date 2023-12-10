@@ -1,7 +1,8 @@
 import Ray from './ray'
 import Vector from './vector'
 import Interval from './interval';
-import {Material} from './material';
+import { Material } from './material';
+import AABB from './aabb'
 
 class Point extends Vector { }
 
@@ -27,4 +28,5 @@ export class HitRecord {
 
 export interface Hittable {
     hit(r: Ray, ray_t: Interval, rec: HitRecord): boolean;
+    boundingBox( outputBox: AABB): boolean;
 }

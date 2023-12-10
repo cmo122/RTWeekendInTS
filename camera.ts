@@ -4,14 +4,17 @@ import Point from './vector'
 import { Hittable, HitRecord } from './hittable';
 import Interval from './interval';
 import Vector from './vector';
-import { Material } from './material';
 import * as fs from 'fs';
 import { degreesToRadians } from './rtweekend';
+import { GPU } from 'gpu.js';
+import { useEffect, useRef } from 'react'
 
 interface ScatterResult {
     attenuation: Color;
     scattered: Ray;
 }
+
+const gpu = new GPU();
 
 export default class Camera {
     /* Public Camera Parameters Here */
