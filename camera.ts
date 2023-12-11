@@ -4,10 +4,8 @@ import Point from './vector'
 import { Hittable, HitRecord } from './hittable';
 import Interval from './interval';
 import Vector from './vector';
-import * as fs from 'fs';
 import { degreesToRadians } from './rtweekend';
 import { GPU } from 'gpu.js';
-import { useEffect, useRef } from 'react'
 
 interface ScatterResult {
     attenuation: Color;
@@ -30,7 +28,7 @@ export default class Camera {
     vfov: number = 90;
     lookFrom: Point = new Point(0, 0, -1)
     lookAt: Point = new Point(0, 0, 0)
-    vup: Point = new Vector(0, 1, 0)
+    vup: Point = new Point(0, 1, 0)
     defocusAngle: number = 0;
     focusDistance: number = 10;
     u!: Vector
@@ -39,26 +37,62 @@ export default class Camera {
     defocusDiskU!: Vector;
     defocusDiskV!: Vector;
 
-
+    //Canvas rendering method
     render(world: Hittable): void {
         this.initialize();
 
-        console.log(`P3\n${this.imageWidth} ${this.imageHeight}\n255\n`);
-        let ppmContent: string = `P3\n${this.imageWidth} ${this.imageHeight}\n255\n`;
-        for (let j = 0; j < this.imageHeight; ++j) {
-            console.log(`\rScanlines remaining: ${this.imageHeight - j} `);
-            for (let i = 0; i < this.imageWidth; ++i) {
-                let pixelColor: Color = new Color(0, 0, 0)
-                for (let sample = 0; sample < this.samples_per_pixel; ++sample) {
-                    const r: Ray = this.getRay(i, j);
-                    pixelColor = pixelColor.add(this.rayColor(r, this.maxDepth, world))
+        const imageHeight = this.imageHeight
+        const imageWidth = this.imageWidth
+        const renderingPromise = new Promise<void>((resolve) => {
+            const canvas = document.getElementById('canvas') as HTMLCanvasElement | null;
+            const ctx = canvas!.getContext('2d');
+            const imageData = ctx!.createImageData(imageWidth, imageHeight);
+
+            let currentLine = 0;
+
+            const renderNextLine = () => {
+                if (currentLine >= imageHeight) {
+                    resolve();
+                    return;
                 }
-                const outputColor = Color.writeColor(pixelColor, this.samples_per_pixel);
-                ppmContent += outputColor;
-            }
-        }
-        fs.writeFileSync('output.ppm', ppmContent, 'utf-8');
-        console.log("\rDone.                 \n");
+
+                console.log(`\rRendering line: ${currentLine + 1}/${imageHeight}`);
+
+                for (let i = 0; i < this.imageWidth; ++i) {
+                    let pixelColor: Color = new Color(0, 0, 0);
+                    for (let sample = 0; sample < this.samples_per_pixel; ++sample) {
+                        const r: Ray = this.getRay(i, currentLine);
+                        pixelColor = pixelColor.add(this.rayColor(r, this.maxDepth, world));
+                    }
+                    const outputColor = Color.writeColor(pixelColor, this.samples_per_pixel);
+                    const [r, g, b] = outputColor.split(' ').map(parseFloat);
+                    const pixelIndex = (currentLine * this.imageWidth + i) * 4;
+                    imageData.data[pixelIndex] = r; // Red component
+                    imageData.data[pixelIndex + 1] = g; // Green component
+                    imageData.data[pixelIndex + 2] = b; // Blue component
+                    imageData.data[pixelIndex + 3] = 255; // Alpha component (255 for opaque)
+                }
+
+                // Render the current scanline
+                ctx!.putImageData(imageData, 0, currentLine);
+
+                // Move to the next scanline for rendering
+                currentLine++;
+
+                // Trigger the rendering of the next scanline
+                requestAnimationFrame(renderNextLine);
+            };
+
+            // Start the rendering process by calling renderNextLine for the first time
+            requestAnimationFrame(renderNextLine);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderingPromise.then(() => {
+                console.log("Done!")
+            })
+        })
+
     }
 
     private initialize(): void {

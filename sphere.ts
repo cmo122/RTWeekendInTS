@@ -9,6 +9,7 @@ export default class Sphere implements Hittable {
     private center: Vector;
     private radius: number;
     private mat!: Material;
+    private bbox: AABB;
 
 
     constructor(_center: Vector, _radius: number, _material: Material) {
@@ -44,10 +45,12 @@ export default class Sphere implements Hittable {
     }
 
     boundingBox(outputBox: AABB): boolean {
-        outputBox = new AABB(
-            this.center.subtract(new Vector(this.radius, this.radius, this.radius)),
-            this.center.add(new Vector(this.radius, this.radius, this.radius))
-        )
+        const radiusVec = new Vector(this.radius, this.radius, this.radius);
+        const min = this.center.subtract(radiusVec);
+        const max = this.center.add(radiusVec);
+
+        outputBox.copy(new AABB(min, max));
+
         return true;
     }
 }

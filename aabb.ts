@@ -1,6 +1,5 @@
 import Point from './vector';
 import Ray from './ray'
-import Interval from './interval';
 
 export default class AABB {
     minimum: Point;
@@ -19,11 +18,17 @@ export default class AABB {
         return this.maximum;
     }
 
+    copy(other: AABB): void {
+        if (!other) return
+        this.minimum = other.minimum
+        this.maximum = other.maximum
+    }
+
     hit(r: Ray, t_min: number, t_max: number): boolean {
         for (let a = 0; a < 3; a++) {
             const invD = 1.0 / r.direction().get(a);
-            let t0 = (this.min().get(a) - r.origin().get(a)) * invD;
-            let t1 = (this.max().get(a) - r.origin().get(a)) * invD;
+            let t0 = (this.minimum.get(a) - r.origin().get(a)) * invD;
+            let t1 = (this.maximum.get(a) - r.origin().get(a)) * invD;
 
             if (invD < 0.0) {
                 [t0, t1] = [t1, t0];
@@ -40,6 +45,12 @@ export default class AABB {
     }
 
     static surroundingBox(box0: AABB, box1: AABB): AABB {
+
+        if (!box0 || !box1) {
+            console.log(box0, box1)
+            throw new Error("Invalid AABB input or null encountered.");
+        }
+
         const small = new Point(
             Math.min(box0.min().x(), box1.min().x()),
             Math.min(box0.min().y(), box1.min().y()),

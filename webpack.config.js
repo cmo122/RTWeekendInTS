@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   entry: './src/index.tsx', // Entry point for your application
   output: {
-    path: path.resolve(__dirname, 'dist'), // Output directory
+    path: __dirname, // Output directory
     filename: 'bundle.js', // Output file name
   },
   resolve: {
@@ -12,7 +12,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx|tsx)$/, // File types to transpile
+        test: /\.(js|jsx|ts|tsx)$/, // File types to transpile
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader', // Use Babel for transpilation

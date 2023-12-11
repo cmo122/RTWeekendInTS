@@ -14,7 +14,7 @@ export default class BVHNode implements Hittable {
         start: number,
         end: number,
     ) {
-        let objects
+        let objects: any[] | HittableList
 
         if (srcObjects instanceof HittableList) {
             objects = srcObjects.get()
@@ -55,21 +55,20 @@ export default class BVHNode implements Hittable {
             this.right = new BVHNode(objects, mid, end);
         }
 
-        const boxLeft: AABB = new AABB()
-        const boxRight: AABB = new AABB()
+        let boxLeft: AABB = new AABB();
+        let boxRight: AABB = new AABB();
 
-        const boxLeftExists = this.boundingBox(boxLeft);
-        const boxRightExists = this.boundingBox(boxRight);
-
-        if (!boxLeftExists || !boxRightExists) {
-            console.error("No bounding box in bvh_node constructor.");
+        if (this.left && this.right) {
+            if (!this.left!.boundingBox(boxLeft) || !this.right!.boundingBox(boxRight)) {
+                console.error("No bounding box in BVHNode constructor.");
+            }
         }
 
         this.bbox = AABB.surroundingBox(boxLeft, boxRight);
     }
 
     boundingBox(outputBox: AABB): boolean {
-        outputBox = this.bbox;
+        outputBox.copy(this.bbox);
         return true;
     }
 
@@ -90,18 +89,20 @@ export default class BVHNode implements Hittable {
     }
 
     static boxXCompare(a: Hittable, b: Hittable): boolean {
-        return this.boxCompare(a, b, 0);
+        return BVHNode.boxCompare(a, b, 0);
     }
 
     static boxYCompare(a: Hittable, b: Hittable): boolean {
-        return this.boxCompare(a, b, 1);
+        return BVHNode.boxCompare(a, b, 1);
     }
 
     static boxZCompare(a: Hittable, b: Hittable): boolean {
-        return this.boxCompare(a, b, 2);
+        return BVHNode.boxCompare(a, b, 2);
     }
 
     static boxCompare(a: Hittable, b: Hittable, axisIndex: number): boolean {
+        if (!a || !b) return false;
+
         const boxA = new AABB();
         const boxB = new AABB();
 

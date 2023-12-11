@@ -129,8 +129,3 @@ export default class Vector {
         }
     }
 }
-
-
-
-
-

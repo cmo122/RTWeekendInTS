@@ -5,6 +5,7 @@ import AABB from './aabb';
 
 export default class HittableList implements Hittable {
     public objects: Hittable[];
+    private bbox: AABB;
 
     constructor() {
         this.objects = [];
@@ -23,7 +24,7 @@ export default class HittableList implements Hittable {
     }
 
     hit(r: Ray, ray_t: Interval, rec: HitRecord): boolean {
-        const tempRec: HitRecord = new HitRecord(); // Assuming HitRecord has appropriate constructor
+        const tempRec: HitRecord = new HitRecord();
         let hitAnything: boolean = false;
         let closestSoFar: number = ray_t.max;
 
@@ -32,7 +33,7 @@ export default class HittableList implements Hittable {
             if (objectHit) {
                 hitAnything = true;
                 closestSoFar = tempRec.t;
-                Object.assign(rec, tempRec); // Assigning properties from tempRec to rec
+                Object.assign(rec, tempRec); 
             }
         }
 
@@ -40,17 +41,7 @@ export default class HittableList implements Hittable {
     }
 
     boundingBox(outputBox: AABB): boolean {
-        if (this.objects.length === 0) return false;
-
-        const tempBox: AABB = new AABB();
-        let firstBox: boolean = true;
-
-        for (const object of this.objects) {
-            if (!object.boundingBox(tempBox)) return false;
-            outputBox = firstBox ? tempBox : AABB.surroundingBox(outputBox, tempBox)
-            firstBox = true;
-        }
+        outputBox.copy(this.bbox);
         return true;
-
     }
 }
