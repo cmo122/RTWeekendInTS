@@ -25,11 +25,11 @@ export default function Canvas() {
             <canvas
                 ref={canvasRef}
                 width={400}
-                height={500}
+                height={800}
                 id="canvas"
                 style={{ border: '1px solid black' }}
             />
-            <button onClick={renderMain}>Render Main</button>
+            <button onClick={renderMain}>Render</button>
             {loading && (
                 <div>
                     Rendering...

@@ -27,8 +27,8 @@ export default class AABB {
     hit(r: Ray, t_min: number, t_max: number): boolean {
         for (let a = 0; a < 3; a++) {
             const invD = 1.0 / r.direction().get(a);
-            let t0 = (this.minimum.get(a) - r.origin().get(a)) * invD;
-            let t1 = (this.maximum.get(a) - r.origin().get(a)) * invD;
+            let t0 = (this.min().get(a) - r.origin().get(a)) * invD;
+            let t1 = (this.max().get(a) - r.origin().get(a)) * invD;
 
             if (invD < 0.0) {
                 [t0, t1] = [t1, t0];

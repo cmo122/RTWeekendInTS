@@ -49,36 +49,38 @@ export default class Camera {
             const imageData = ctx!.createImageData(imageWidth, imageHeight);
 
             let currentLine = 0;
+            const blockSize = 10;
 
             const renderNextLine = () => {
-                if (currentLine >= imageHeight) {
-                    resolve();
-                    return;
-                }
-
-                console.log(`\rRendering line: ${currentLine + 1}/${imageHeight}`);
-
-                for (let i = 0; i < this.imageWidth; ++i) {
-                    let pixelColor: Color = new Color(0, 0, 0);
-                    for (let sample = 0; sample < this.samples_per_pixel; ++sample) {
-                        const r: Ray = this.getRay(i, currentLine);
-                        pixelColor = pixelColor.add(this.rayColor(r, this.maxDepth, world));
+                for (let blockLine = 0; blockLine < blockSize; ++blockLine) {
+                    if (currentLine >= imageHeight) {
+                        resolve();
+                        return;
                     }
-                    const outputColor = Color.writeColor(pixelColor, this.samples_per_pixel);
-                    const [r, g, b] = outputColor.split(' ').map(parseFloat);
-                    const pixelIndex = (currentLine * this.imageWidth + i) * 4;
-                    imageData.data[pixelIndex] = r; // Red component
-                    imageData.data[pixelIndex + 1] = g; // Green component
-                    imageData.data[pixelIndex + 2] = b; // Blue component
-                    imageData.data[pixelIndex + 3] = 255; // Alpha component (255 for opaque)
+
+                    console.log(`\rRendering line: ${currentLine + 1}/${imageHeight}`);
+
+                    for (let i = 0; i < this.imageWidth; ++i) {
+                        let pixelColor: Color = new Color(0, 0, 0);
+                        for (let sample = 0; sample < this.samples_per_pixel; ++sample) {
+                            const r: Ray = this.getRay(i, currentLine);
+                            pixelColor = pixelColor.add(this.rayColor(r, this.maxDepth, world));
+                        }
+                        const outputColor = Color.writeColor(pixelColor, this.samples_per_pixel);
+                        const [r, g, b] = outputColor.split(' ').map(parseFloat);
+                        const pixelIndex = (currentLine * this.imageWidth + i) * 4;
+                        imageData.data[pixelIndex] = r; // Red component
+                        imageData.data[pixelIndex + 1] = g; // Green component
+                        imageData.data[pixelIndex + 2] = b; // Blue component
+                        imageData.data[pixelIndex + 3] = 255; // Alpha component (255 for opaque)
+                    }
+
+                    // Render the current scanline
+                    ctx!.putImageData(imageData, 0, currentLine);
+
+                    // Move to the next scanline for rendering
+                    currentLine++;
                 }
-
-                // Render the current scanline
-                ctx!.putImageData(imageData, 0, currentLine);
-
-                // Move to the next scanline for rendering
-                currentLine++;
-
                 // Trigger the rendering of the next scanline
                 requestAnimationFrame(renderNextLine);
             };

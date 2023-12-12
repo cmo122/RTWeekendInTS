@@ -73,17 +73,15 @@ export default class BVHNode implements Hittable {
     }
 
     hit(r: Ray, rayT: Interval, rec: HitRecord): boolean {
-        if (!this.bbox.hit(r, rayT.min, rayT.max)) {
-            return false;
-        }
+        if (!this.bbox.hit(r, rayT.min, rayT.max)) return false;
 
-        const hitLeft = this.left?.hit(r, rayT, rec) || false;
+        const hitLeft: boolean = this.left?.hit(r, rayT, rec) || false;
 
-        const newInterval = hitLeft
+        const newInterval: Interval = hitLeft
             ? new Interval(rayT.min, rec.t)
-            : new Interval(rec.t, rayT.max);
+            : new Interval(rayT.min, rayT.max);
 
-        const hitRight = this.right?.hit(r, newInterval, rec) || false;
+        const hitRight: boolean = this.right?.hit(r, newInterval, rec) || false;
 
         return hitLeft || hitRight;
     }

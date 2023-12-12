@@ -15,6 +15,10 @@ export default class HittableList implements Hittable {
         return this.objects
     }
 
+    getLength():number{
+        return this.objects.length
+    }
+
     clear(): void {
         this.objects = [];
     }
@@ -33,7 +37,7 @@ export default class HittableList implements Hittable {
             if (objectHit) {
                 hitAnything = true;
                 closestSoFar = tempRec.t;
-                Object.assign(rec, tempRec); 
+                Object.assign(rec, tempRec);
             }
         }
 
@@ -41,7 +45,17 @@ export default class HittableList implements Hittable {
     }
 
     boundingBox(outputBox: AABB): boolean {
-        outputBox.copy(this.bbox);
+        if (this.objects.length === 0) return false;
+
+        let tempBox: AABB = new AABB();
+        let firstBox: boolean = true;
+
+        for (const object of this.objects) {
+            if (!object.boundingBox(tempBox)) return false;
+            outputBox.copy(firstBox ? tempBox : AABB.surroundingBox(outputBox, tempBox));
+            firstBox = false;
+        }
+
         return true;
     }
 }
