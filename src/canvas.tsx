@@ -21,15 +21,24 @@ export default function Canvas() {
     };
 
     return (
-        <div>
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh', // Full height of the viewport
+            }}>
             <canvas
                 ref={canvasRef}
                 width={400}
-                height={800}
+                height={450}
                 id="canvas"
                 style={{ border: '1px solid black' }}
             />
-            <button onClick={renderMain}>Render</button>
+            <button style={{
+                margin: "1rem"
+            }} onClick={renderMain}>Render</button>
             {loading && (
                 <div>
                     Rendering...

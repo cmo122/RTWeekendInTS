@@ -19,6 +19,9 @@ export const main = (): void => {
     // const material_left: Dielectric = new Dielectric(1.5); // Dielectric material with refractive index 1.5
     // const material_right: Metal = new Metal(new Color(0.8, 0.6, 0.2), 0.0); // Metal with specific color and fuzziness
 
+    // *********
+    // BVH code
+    // *********
     spheres1.add(new Sphere(new Point(0.0, -1000, 0.0), 1000.0, material_ground));
     // spheres1.add(new Sphere(new Point(-1.0, 0.0, -1.0), 0.5, material_left));
     // spheres1.add(new Sphere(new Point(-1.0, 0.0, -1.0), -0.4, material_left));
@@ -62,7 +65,52 @@ export const main = (): void => {
     let material3 = new Metal(new Color(0.7, 0.6, 0.5), 0.0);
     spheres1.add(new Sphere(new Vector(4, 1, 0), 1.0, material3));
 
+    // *********
+    // OG Code
+    // *********
+    // const groundMaterial = new Lambertian(new Color(0.5, 0.5, 0.5));
+    // world.add(new Sphere(new Point(0, -1000, 0), 1000, groundMaterial));
+
+    // for (let a = -11; a < 11; a++) {
+    //     for (let b = -11; b < 11; b++) {
+    //         const chooseMat = Math.random();
+    //         const center = new Point(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
+
+    //         if ((center).subtract(new Point(4, 0.2, 0)).length() > 0.9) {
+    //             let sphereMaterial;
+
+    //             if (chooseMat < 0.8) {
+    //                 // Diffuse
+    //                 const albedo = Vector.multiply(Color.random(), Color.random());
+    //                 sphereMaterial = new Lambertian(albedo);
+    //                 world.add(new Sphere(center, 0.2, sphereMaterial));
+    //             } else if (chooseMat < 0.95) {
+    //                 // Metal
+    //                 const albedo = Color.random(0.5, 1);
+    //                 const fuzz = Math.random() * 0.5;
+    //                 sphereMaterial = new Metal(albedo, fuzz);
+    //                 world.add(new Sphere(center, 0.2, sphereMaterial));
+    //             } else {
+    //                 // Glass
+    //                 sphereMaterial = new Dielectric(1.5);
+    //                 world.add(new Sphere(center, 0.2, sphereMaterial));
+    //             }
+    //         }
+    //     }
+    // }
+
+    // const material1 = new Dielectric(1.5);
+    // world.add(new Sphere(new Point(0, 1, 0), 1.0, material1));
+
+    // const material2 = new Lambertian(new Color(0.4, 0.2, 0.1));
+    // world.add(new Sphere(new Point(-4, 1, 0), 1.0, material2));
+
+    // const material3 = new Metal(new Color(0.7, 0.6, 0.5), 0.0);
+    // world.add(new Sphere(new Point(4, 1, 0), 1.0, material3));
+
     world.add(new BVHNode(spheres1, 0, spheres1.getLength()))
+
+
     console.log(world.get())
 
     const cam: Camera = new Camera();
